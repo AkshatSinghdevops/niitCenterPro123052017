@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+ http://www.springframework.org/schema/beans     
+ http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+ http://www.springframework.org/schema/context 
+ http://www.springframework.org/schema/context/spring-context-4.1.xsd
+ http://www.springframework.org/schema/security
+ http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+
+<security:http auto-config="true">
+
+
+		<security:intercept-url pattern="/manage**"
+			access="hasRole('ROlE_ADMIN')" />
+
+		<security:intercept-url pattern="/myCart/**"
+			access="hasRole('ROLE_USER')" />
+
+
+		<security:intercept-url pattern="/cart_checkout**"
+			access="hasRole('ROLE_USER')" />
+
+
+
+		<security:form-login login-page ="/Login" 
+		   login-processing-url="/j_spring_security_check"  default-target-url="/validate" 
+		   authentication-failure-url="/loginError"  username-parameter="username"
+			password-parameter="password"  />
+
+		<security:logout logout-url="/j_spring_security_Logout"
+		logout-success-url="/logout" delete-cookies="JSESSIONID" />
+
+		<security:access-denied-handler
+			error-page="/accessDenied" />
+
+		<security:csrf />
+
+	</security:http>
+
+	<!-- dataSource must be same as in ApplicationContextConfig -->
+	
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service
+				data-source-ref="dataSource"
+				users-by-username-query="select id, password, 'true' as enabled from user where id=?"
+				authorities-by-username-query="select id, role from user where id=?" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
